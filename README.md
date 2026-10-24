@@ -12,7 +12,7 @@
 |---------|------|----------|
 | `turtle_interfaces` | ament_cmake | `msg/TargetPose` (x, y, yaw), `action/GoToPose`, `action/DrawSquare`, `srv/SetSpeedLimits` |
 | `turtle_control` | ament_python | `go_to_pose_server` (action + speed parameters + `set_speed_limits` service), `reset_service`, `draw_square_server`, pure-Python `motion.py` / `waypoints.py`, unit tests |
-| `turtle_bringup` | ament_python | `launch/bringup.launch.py`, `launch/square_demo.launch.py`, `config/turtle_params.yaml` |
+| `turtle_bringup` | ament_python | `launch/bringup.launch.py`, `launch/square_demo.launch.py`, `config/turtle_params.yaml`, `bags/` (recorded bag + playback screenshot) |
 
 ### Architecture
 ```
@@ -32,11 +32,10 @@
 
 ## Build
 ```bash
-source /opt/ros/<distro>/setup.bash          # humble / jazzy ...
+source /opt/ros/jazzy/setup.bash
 mkdir -p ~/lab1_ws/src && cd ~/lab1_ws/src
-git clone <your-repo-url> .                  # package folders + README only
+git clone https://github.com/minanaim17-ship-it/lab1-ros2-turtlesim.git .
 cd ~/lab1_ws
-rosdep install --from-paths src --ignore-src -y
 colcon build
 source install/setup.bash                    # in EVERY new terminal
 ```
@@ -75,7 +74,6 @@ Speed limits are read on **every** control tick (50 Hz), so changing them while 
 | **State** | `turtle_control/motion.py` – `RotateToHeading`, `DriveToPoint`, `RotateToYaw`, `Done`, context `GoToPoseController` | Each phase of goToPose has its own logic and transition rules; no big if/else in the ROS node. |
 | **Strategy** | `motion.py` – `SaturatedP` injected into the states | The control law is swappable (e.g. PID) without touching the states. |
 | **Factory** | `turtle_control/waypoints.py` – `PathFactory.create('square', ...)` | The square server asks for a path by name; new shapes just register a class. |
-| **Observer** | ROS pub/sub (pose subscription, feedback topics) | The node reacts to pose updates instead of polling turtlesim. |
 
 The motion logic has no ROS imports, so it is unit-tested with a simulated turtle:
 ```bash
@@ -84,6 +82,7 @@ cd ~/lab1_ws && colcon test --packages-select turtle_control && colcon test-resu
 (11 tests: all directions, speed limits never exceeded, live speed change, square geometry, validation.)
 
 ## Bonus 2 – Bag file
+The recorded bag is included in `turtle_bringup/bags/square_bag`.
 ```bash
 # terminal 1
 ros2 launch turtle_bringup bringup.launch.py
@@ -96,6 +95,8 @@ ros2 bag info square_bag
 ros2 service call /reset_turtle std_srvs/srv/Trigger
 ros2 bag play square_bag --topics /turtle1/cmd_vel
 ```
+Playback result (the turtle repeats the square):
+
 ![Playback](turtle_bringup/bags/playback.png)
 
 ## Troubleshooting
