@@ -32,11 +32,10 @@
 
 ## Build
 ```bash
-source /opt/ros/<distro>/setup.bash          # humble / jazzy ...
+source /opt/ros/jazzy/setup.bash
 mkdir -p ~/lab1_ws/src && cd ~/lab1_ws/src
-git clone <your-repo-url> .                  # package folders + README only
+git clone https://github.com/minanaim17-ship-it/lab1-ros2-turtlesim.git .
 cd ~/lab1_ws
-rosdep install --from-paths src --ignore-src -y
 colcon build
 source install/setup.bash                    # in EVERY new terminal
 ```
