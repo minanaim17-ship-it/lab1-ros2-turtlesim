@@ -1,0 +1,11 @@
+# Goal: side length in turtlesim units (0 -> use the server's default_side_length)
+float32 side_length
+---
+# Result
+bool success
+string message
+uint8 sides_completed
+---
+# Feedback
+uint8 current_side
+string status
