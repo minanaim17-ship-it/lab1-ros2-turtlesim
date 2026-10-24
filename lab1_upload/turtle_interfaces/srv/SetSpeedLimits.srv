@@ -1,6 +1,0 @@
-# Both values must be > 0 (and <= 10). The change is atomic: both or none.
-float64 max_linear_speed
-float64 max_angular_speed
----
-bool success
-string message
